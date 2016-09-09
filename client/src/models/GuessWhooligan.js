@@ -18,17 +18,13 @@ GuessWhooligan.prototype ={
   },
 
   changeTurn:  function(){
-
-
+      this.turnCounter ++;
+      return(this.turnCounter<5);
   },
 
-  handleGuess: function(){
-
-
+  handleGuess: function(player){
+      player.guessCheck;
   }
-
-
-
 
 }
 

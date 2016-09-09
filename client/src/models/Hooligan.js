@@ -10,9 +10,11 @@ Hooligan.prototype = {
 
   checkGuess: function(guess){
       for(characteristic of this.characteristics){
-        if(characteristic.description = guess){
-          this.eliminated = true;
-          return;
+        if(characteristic.description == guess){
+            if(characteristic.valid){
+              this.eliminated = true;
+              return;
+            }
         }
       }
   },

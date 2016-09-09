@@ -1,0 +1,30 @@
+
+
+Game(
+    turnCounter: ()
+    setupcharacters()
+    selectLeader()
+    guess(characteristic, player)
+    giveGetem(player)
+    useGetem(player)
+)
+
+    Player{
+      Name:
+      Characters:[{},{}]
+      Leader: 
+      Getems:
+
+
+      peekLeader();
+      useGetem();
+    }
+
+
+    Characters{
+        name:
+        image:
+        eliminated: boolean
+        leader: boolean
+        characteristics: [{descriptor, boolean},{descriptor, boolean}]
+    }

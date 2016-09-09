@@ -9,7 +9,7 @@ var Hooligan =function(params){
 Hooligan.prototype = {
 
   checkGuess: function(guess){
-      for(characteristic of this.characteristics){
+      for(var characteristic of this.characteristics){
         if(characteristic.description == guess){
             if(characteristic.valid){
               this.eliminated = true;

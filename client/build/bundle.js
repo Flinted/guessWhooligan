@@ -48,10 +48,38 @@
 	
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
-	var CommentBox = __webpack_require__(159);
+	var GameBox = __webpack_require__(159);
+	var Player = __webpack_require__(164);
+	var Hooligan = __webpack_require__(162);
 	
 	window.onload = function () {
-	  ReactDOM.render(React.createElement(CommentBox, null), document.getElementById('app'));
+	  var player1 = new Player("Malcolm");
+	  var player2 = new Player('Steve');
+	
+	  var hooligan1 = new Hooligan({
+	    name: 'jake',
+	    image: '/images/hooligan1.jpg',
+	    characteristics: [{ description: 'had a leather jacket', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a weapon', valid: true }] });
+	
+	  var hooligan2 = new Hooligan({
+	    name: 'Mike',
+	    image: '/images/hooligan2.jpg',
+	    characteristics: [{ description: 'had a leather jacket', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a weapon', valid: true }] });
+	
+	  var hooligan3 = new Hooligan({
+	    name: 'Vlad',
+	    image: '/images/hooligan3.jpg',
+	    characteristics: [{ description: 'had a leather jacket', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a weapon', valid: false }] });
+	
+	  var hooligan4 = new Hooligan({
+	    name: 'Stephen',
+	    image: '/images/hooligan4.jpg',
+	    characteristics: [{ description: 'had a leather jacket', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a weapon', valid: false }] });
+	
+	  var hooligans = [hooligan1, hooligan2, hooligan3, hooligan4];
+	  var players = [player1, player2];
+	
+	  ReactDOM.render(React.createElement(GameBox, { hooligans: hooligans, players: players }), document.getElementById('app'));
 	};
 
 /***/ },
@@ -19755,37 +19783,69 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var CommentList = __webpack_require__(160);
-	var CommentForm = __webpack_require__(162);
+	var PlayerArea = __webpack_require__(160);
+	var GuessBar = __webpack_require__(166);
+	var GuessWhooligan = __webpack_require__(161);
 	
-	var CommentBox = React.createClass({
-	  displayName: 'CommentBox',
+	var GameBox = React.createClass({
+	  displayName: 'GameBox',
 	
 	  getInitialState: function getInitialState() {
-	    return { data: [{ _id: 1, author: 'Jay', text: 'Hello' }] };
+	    var game = new GuessWhooligan(this.props.hooligans, this.props.players);
+	    game.setupHooligans();
+	    console.log(game);
+	    return { game: game, target: game.targetPlayer, guesses: [], player1: '', player1hooligans: [], player2: '', player2hooligans: [] };
 	  },
-	  handleCommentSubmit: function handleCommentSubmit(comment) {
-	    var comments = this.state.data;
-	    comment._id = Date.now();
-	    var newComments = comments.concat([comment]);
-	    this.setState({ data: newComments });
+	
+	  componentDidMount: function componentDidMount() {
+	    this.refresh();
 	  },
+	
+	  handleGuess: function handleGuess(event) {
+	    var guess = document.getElementById('guesser').value;
+	    console.log("clicked", guess);
+	    this.state.game.handleGuess(this.state.target, guess);
+	    console.log(this.state.target, guess);
+	    this.state.game.changeTurn();
+	    this.refresh();
+	  },
+	
+	  refresh: function refresh() {
+	    var names = this.state.game.players;
+	    var player1 = names[0];
+	    var player2 = names[1];
+	    var p1Hooligans = this.state.game.returnHooligans(player1);
+	    var p2Hooligans = this.state.game.returnHooligans(player2);
+	    var characteristics = this.state.game.returnGuesses();
+	    var current = this.state.game.targetPlayer;
+	    this.setState({ guesses: characteristics, target: current, player1: player1, player1hooligans: p1Hooligans, player2: player2, player2hooligans: p2Hooligans });
+	  },
+	
+	  getThem: function getThem(event) {
+	    console.log('clicked', event.target.value);
+	    // check if this player is the leader
+	    // end game if true
+	    // end turn and give getEm if false
+	  },
+	
 	  render: function render() {
+	    console.log("rendering");
 	    return React.createElement(
 	      'div',
-	      { className: 'commentBox' },
+	      { className: 'main-window' },
 	      React.createElement(
 	        'h1',
-	        null,
-	        'Comments'
+	        { id: 'title' },
+	        'Guess Whooligan!'
 	      ),
-	      React.createElement(CommentList, { data: this.state.data }),
-	      React.createElement(CommentForm, { onCommentSubmit: this.handleCommentSubmit })
+	      React.createElement(PlayerArea, { id: 'player1', name: this.state.player1.name, hooligans: this.state.player1hooligans, getThem: this.getThem }),
+	      React.createElement(PlayerArea, { id: 'player2', name: this.state.player2.name, hooligans: this.state.player2hooligans, getThem: this.getThem }),
+	      React.createElement(GuessBar, { guesses: this.state.guesses, onClick: this.handleGuess })
 	    );
 	  }
 	});
 	
-	module.exports = CommentBox;
+	module.exports = GameBox;
 
 /***/ },
 /* 160 */
@@ -19794,107 +19854,312 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var Comment = __webpack_require__(161);
-	var CommentList = React.createClass({
-	  displayName: 'CommentList',
+	var HooliganCard = __webpack_require__(165);
+	var PlayerArea = function PlayerArea(props) {
+	  var hooliganNodes = props.hooligans.map(function (hooligan, index) {
+	    return React.createElement(HooliganCard, { index: index, name: hooligan.name, eliminated: hooligan.eliminated, key: index, getThem: props.getThem });
+	  });
 	
-	  render: function render() {
+	  return React.createElement(
+	    'div',
+	    { className: 'play-area' },
+	    React.createElement(
+	      'h1',
+	      null,
+	      props.name,
+	      '\'s hit list'
+	    ),
+	    React.createElement(
+	      'ul',
+	      null,
+	      hooliganNodes
+	    )
+	  );
+	};
 	
-	    var commentNodes = this.props.data.map(function (comment) {
-	      return React.createElement(
-	        Comment,
-	        { key: comment._id, author: comment.author },
-	        comment.text
-	      );
-	    });
-	
-	    return React.createElement(
-	      'div',
-	      { className: 'commentList' },
-	      commentNodes
-	    );
-	  }
-	});
-	module.exports = CommentList;
+	module.exports = PlayerArea;
 
 /***/ },
 /* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
-	var React = __webpack_require__(1);
-	var Comment = React.createClass({
-	  displayName: "Comment",
+	var Hooligan = __webpack_require__(162);
+	var Player = __webpack_require__(163);
 	
-	  render: function render() {
-	    return React.createElement(
-	      "div",
-	      { className: "comment" },
-	      React.createElement(
-	        "h2",
-	        { className: "commentAuthor" },
-	        this.props.author
-	      ),
-	      this.props.children
-	    );
+	var GuessWhooligan = function GuessWhooligan(hooligans, players) {
+	  this.turnCounter = 0, this.players = players, this.targetPlayer = players[0], this.hooligans = hooligans;
+	};
+	
+	GuessWhooligan.prototype = {
+	
+	  setupHooligans: function setupHooligans() {
+	    var p1Hooligans = this.hooligans;
+	    var p2Hooligans = this.hooligans;
+	    this.players[0].setup(p1Hooligans);
+	    this.players[1].setup(p2Hooligans);
+	  },
+	
+	  changeTurn: function changeTurn() {
+	    this.turnCounter++;
+	    if (this.targetPlayer === this.players[0]) {
+	      this.targetPlayer = this.players[1];
+	    } else {
+	      this.targetPlayer = this.players[0];
+	    }
+	    return this.turnCounter < 5;
+	  },
+	
+	  handleGuess: function handleGuess(player, guess) {
+	    player.guessCheck(guess);
+	  },
+	
+	  returnHooligans: function returnHooligans(playertoReturn) {
+	    if (this.players[0] == playertoReturn) {
+	      console.log("player1");
+	      return this.players[0].hooligans;
+	    }
+	    if (this.players[1] == playertoReturn) {
+	      console.log("player2");
+	      return this.players[1].hooligans;
+	    }
+	  },
+	
+	  returnGuesses: function returnGuesses() {
+	    var characteristics = this.hooligans[0].characteristics;
+	    var returnGuesses = [];
+	    for (var i = 0; i < characteristics.length; i++) {
+	      returnGuesses.push(characteristics[i].description);
+	    }
+	    return returnGuesses;
 	  }
-	});
 	
-	module.exports = Comment;
+	};
+	
+	module.exports = GuessWhooligan;
 
 /***/ },
 /* 162 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var Hooligan = function Hooligan(params) {
+	  this.name = params.name, this.img = params.img, this.characteristics = params.characteristics, this.leader = false, this.eliminated = false;
+	};
+	
+	Hooligan.prototype = {
+	
+	  checkGuess: function checkGuess(guess) {
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+	
+	    try {
+	      for (var _iterator = this.characteristics[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var characteristic = _step.value;
+	
+	        if (characteristic.description == guess) {
+	          if (characteristic.valid) {
+	            this.eliminated = true;
+	            return;
+	          }
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+	  },
+	
+	  makeLeader: function makeLeader() {
+	    this.leader = true;
+	  }
+	
+	};
+	
+	module.exports = Hooligan;
+
+/***/ },
+/* 163 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var Player = function Player(name) {
+	    this.name = name, this.hooligans = [], this.eliminated = [], this.leader = null, this.getEms = 0;
+	};
+	
+	Player.prototype = {
+	    setup: function setup(hooligans) {
+	        this.hooligans = hooligans;
+	        var index = Math.floor(Math.random() * this.hooligans.length);
+	        this.leader = hooligans[index];
+	        this.leader.makeLeader();
+	    },
+	
+	    guessCheck: function guessCheck(guess) {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+	
+	        try {
+	            for (var _iterator = this.hooligans[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var hooligan = _step.value;
+	
+	                hooligan.checkGuess(guess);
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                    _iterator.return();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+	    }
+	
+	};
+	
+	module.exports = Player;
+
+/***/ },
+/* 164 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var Player = function Player(name) {
+	    this.name = name, this.hooligans = [], this.eliminated = [], this.leader = null, this.getEms = 0;
+	};
+	
+	Player.prototype = {
+	    setup: function setup(hooligans) {
+	        this.hooligans = hooligans;
+	        var index = Math.floor(Math.random() * this.hooligans.length);
+	        this.leader = hooligans[index];
+	        this.leader.makeLeader();
+	    },
+	
+	    guessCheck: function guessCheck(guess) {
+	        var _iteratorNormalCompletion = true;
+	        var _didIteratorError = false;
+	        var _iteratorError = undefined;
+	
+	        try {
+	            for (var _iterator = this.hooligans[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                var hooligan = _step.value;
+	
+	                hooligan.checkGuess(guess);
+	            }
+	        } catch (err) {
+	            _didIteratorError = true;
+	            _iteratorError = err;
+	        } finally {
+	            try {
+	                if (!_iteratorNormalCompletion && _iterator.return) {
+	                    _iterator.return();
+	                }
+	            } finally {
+	                if (_didIteratorError) {
+	                    throw _iteratorError;
+	                }
+	            }
+	        }
+	    }
+	
+	};
+	
+	module.exports = Player;
+
+/***/ },
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var React = __webpack_require__(1);
-	var CommentForm = React.createClass({
-	  displayName: 'CommentForm',
 	
-	  getInitialState: function getInitialState() {
-	    return { author: '', text: '' };
-	  },
-	  handleAuthorChange: function handleAuthorChange(e) {
-	    this.setState({ author: e.target.value });
-	  },
-	  handleTextChange: function handleTextChange(e) {
-	    this.setState({ text: e.target.value });
-	  },
-	  handleSubmit: function handleSubmit(e) {
-	    e.preventDefault();
-	    var author = this.state.author.trim();
-	    var text = this.state.text.trim();
-	    if (!text || !author) {
-	      return;
-	    }
-	    // TODO: send request to the server
-	    this.props.onCommentSubmit({ author: author, text: text });
-	    this.setState({ author: '', text: '' });
-	  },
-	  render: function render() {
-	    return React.createElement(
-	      'form',
-	      { className: 'commentForm', onSubmit: this.handleSubmit },
-	      React.createElement('input', {
-	        type: 'text',
-	        placeholder: 'Your name',
-	        value: this.state.author,
-	        onChange: this.handleAuthorChange
-	      }),
-	      React.createElement('input', {
-	        type: 'text',
-	        placeholder: 'Say something...',
-	        value: this.state.text,
-	        onChange: this.handleTextChange
-	      }),
-	      React.createElement('input', { type: 'submit', value: 'Post' })
-	    );
+	var HooliganCard = function HooliganCard(props) {
+	  var className = '';
+	  if (props.eliminated) {
+	    console.log(props.eliminated);
+	    className = "game-card-out";
+	  } else {
+	    className = "game-card";
 	  }
-	});
 	
-	module.exports = CommentForm;
+	  return React.createElement(
+	    'li',
+	    { value: props.index, onClick: props.getThem, className: className },
+	    React.createElement(
+	      'h4',
+	      null,
+	      props.name
+	    )
+	  );
+	};
+	
+	module.exports = HooliganCard;
+
+/***/ },
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	var GuessBar = function GuessBar(props) {
+	
+	    var characteristicsNodes = props.guesses.map(function (guess, index) {
+	        return React.createElement(
+	            'option',
+	            { index: index, key: index },
+	            guess,
+	            ' '
+	        );
+	    });
+	
+	    return React.createElement(
+	        'div',
+	        { id: 'guess-bar' },
+	        React.createElement(
+	            'h4',
+	            null,
+	            'I saw them officer, they '
+	        ),
+	        React.createElement(
+	            'select',
+	            { id: 'guesser' },
+	            characteristicsNodes
+	        ),
+	        React.createElement(
+	            'button',
+	            { onClick: props.onClick },
+	            'Guess'
+	        )
+	    );
+	};
+	
+	module.exports = GuessBar;
 
 /***/ }
 /******/ ]);

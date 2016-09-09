@@ -1,3 +1,5 @@
+
+ 
 var Player = function(name){
     this.name=name,
     this.hooligans= [],
@@ -12,6 +14,12 @@ Player.prototype={
     var index = Math.floor((Math.random() * this.hooligans.length));
     this.leader = hooligans[index];
     this.leader.makeLeader();
+  },
+
+  guessCheck: function(guess){
+      for(var hooligan of this.hooligans){
+          hooligan.checkGuess(guess);
+      }
   }
 
 }

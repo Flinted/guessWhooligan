@@ -1,6 +1,6 @@
 var Hooligan =function(params){
     this.name = params.name,
-    this.img = params.img,
+    this.img = params.image,
     this.characteristics = params.characteristics,
     this.leader = false,
     this.eliminated = false
@@ -21,8 +21,11 @@ Hooligan.prototype = {
 
   makeLeader: function(){
     this.leader=true;
-  }
+  },
 
+  eliminate: function(){
+          this.eliminated = true;
+  }
 }
 
 module.exports = Hooligan;

@@ -18,9 +18,7 @@ var GameBox = React.createClass({
 
   handleGuess: function(event){
     var guess = document.getElementById('guesser').value;
-    console.log("clicked", guess);
     this.state.game.handleGuess(this.state.target, guess);
-    console.log(this.state.target,guess);
     this.state.game.changeTurn();
     this.refresh()
   },
@@ -33,23 +31,36 @@ var GameBox = React.createClass({
       var p2Hooligans= this.state.game.returnHooligans(player2);
       var characteristics = this.state.game.returnGuesses();
       var current = this.state.game.targetPlayer;
-      this.setState({guesses: characteristics, target: current, player1: player1, player1hooligans: p1Hooligans ,player2:player2,player2hooligans: p2Hooligans})
+      this.setState({guesses: characteristics, target: current, player1: player1, player1hooligans: p1Hooligans ,player2:player2,player2hooligans: p2Hooligans});
   },
 
   getThem: function(event){
       console.log('clicked', event.target.value);
+      var target = this.state.target.hooligans[event.target.value]
+      if(target.leader){
+        this.endGame();
+      }else{
+        target.eliminate()
+        this.state.target.addGetem();
+        this.state.game.changeTurn();
+        this.refresh();
+      }
       // check if this player is the leader
       // end game if true
       // end turn and give getEm if false
+  },
+
+  endGame: function(){
+      console.log("Game Over");
   },
 
   render: function() {
     console.log("rendering");
     return (
       <div className="main-window">
-        <h1 id="title">Guess Whooligan!</h1>
-        <PlayerArea id='player1' name={this.state.player1.name}hooligans= {this.state.player1hooligans} getThem={this.getThem}/>
-        <PlayerArea id='player2' name={this.state.player2.name}hooligans= {this.state.player2hooligans} getThem={this.getThem}/>
+        <h1 id="title">Guess Whooligan</h1>
+        <PlayerArea key="1" id='player1' name={this.state.player1.name}hooligans= {this.state.player1hooligans} getThem={this.getThem}/>
+        <PlayerArea key="2" id='player2' name={this.state.player2.name}hooligans= {this.state.player2hooligans} getThem={this.getThem}/>
         <GuessBar guesses={this.state.guesses} onClick={this.handleGuess}/>
       </div>
     );

@@ -1,4 +1,4 @@
-
+var Hooligan =require('./Hooligan');
  
 var Player = function(name){
     this.name=name,
@@ -10,9 +10,11 @@ var Player = function(name){
 
 Player.prototype={
   setup: function(hooligans){
-    this.hooligans = hooligans;
+    this.hooligans = hooligans.map(function(params){
+       return new Hooligan(params);
+    });
     var index = Math.floor((Math.random() * this.hooligans.length));
-    this.leader = hooligans[index];
+    this.leader = this.hooligans[index];
     this.leader.makeLeader();
   },
 
@@ -20,7 +22,12 @@ Player.prototype={
       for(var hooligan of this.hooligans){
           hooligan.checkGuess(guess);
       }
+  },
+
+  addGetem: function(){
+    this.getEms ++;
   }
+
 
 }
 

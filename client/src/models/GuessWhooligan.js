@@ -12,10 +12,8 @@ var GuessWhooligan = function(hooligans, players){
 GuessWhooligan.prototype ={
 
   setupHooligans: function(){
-        var p1Hooligans = this.hooligans;
-        var p2Hooligans = this.hooligans;
-        this.players[0].setup(p1Hooligans);
-        this.players[1].setup(p2Hooligans);
+        this.players[0].setup(this.hooligans);
+        this.players[1].setup(this.hooligans);
   },
 
   changeTurn:  function(){
@@ -31,7 +29,6 @@ GuessWhooligan.prototype ={
   handleGuess: function(player, guess){
       player.guessCheck(guess);
   },
-
 
   returnHooligans: function(playertoReturn){
         if(this.players[0] == playertoReturn){

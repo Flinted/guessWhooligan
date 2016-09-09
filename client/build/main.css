@@ -1,44 +1,113 @@
 body {
   font-family: "Trebuchet MS";
-  padding: 20px;
+  /*background-image: url('/images/alley.jpg');*/
+  background-image: url('/images/wall.jpg');
+  background-size: cover;
+
+}
+
+#title{
+  font-family: 'HVD Peace';
+  color: white;
+  font-size: 7rem;
+  text-align: center;
+  margin:0px;
+  margin-top: 30px;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
 }
 
 .play-area{
-  width:48%;
+  width:47%;
   margin-bottom: 20px;  
+  padding: 0px;
+  border: 2px solid black;
+}
+
+.play-area h1{
+  font-family: 'HVD Peace';
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  color: white;
+  font-size: 2.8rem;
+  text-align: center;
 }
 
 .main-window .play-area:nth-child(3){
-  border: 3px solid red;
+  background-color: rgba(0,0,255,0.5);
+  margin-left: 30px;
   float: left;  
+
 }
 
 .main-window .play-area:nth-child(2){
-  border: 3px solid blue;
+  background-color: rgba(255,0,0,0.5);
+  margin-right: 10px;
   float: right;
+
+}
+
+.thumbnail{
+  width: 100px;
+  height:100px;
+  clear:both;
+  margin-top: 30px;
+}
+
+.name{
+  height: 20px;
+  text-align: center;
+  background-color: rgba(255,255,255,0.5);
+  width: 100%;
+  display: block;
+  margin:0px;
+  position: absolute;
+      bottom: 0;
+      left: 0;
 }
 
 .game-card{
+  position: relative;
   width: 130px;
-  height: 160px;
+  height: 130px;
   margin: 4px 4px 4px 4px;
   display: inline-flex;
   justify-content: center;
-  border: 3px solid black;
+  border: 3px solid white;
+  background-size: contain;
+  padding: none;
+}
+
+#card-list{
+  margin-left: -30px;
+}
+
+.game-card:hover{
+  box-shadow: 3px 3px 5px black;
+  overflow: visible;
+  z-index: 300;
 }
 
 .game-card-out{
   width: 130px;
-  height: 160px;
+  height: 130px;
+  opacity: 0.5;
   margin: 4px 4px 4px 4px;
   display: inline-flex;
   justify-content: center;
-  border: 3px dashed blue;
+  border: 3px solid white;
+  background-size: contain;
+  padding: none;
+  pointer-events: none;
+}
+
+.game-card-out .name{
+  display: none;
 }
 
 #guess-bar{
   width: 100%;
   height: 100px;
-  background-color: wheat;
+  text-align: center;
   clear: both;
 }

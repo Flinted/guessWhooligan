@@ -27,9 +27,19 @@ describe("Players", function(){
     player1.setup([hooligan1]);
     assert.deepEqual(1,player1.hooligans.length);
     assert.deepEqual('Jake',player1.leader.name);
-    
+  })
 
+  it("Should add Bribes", function(){
+    player1.addBribe();
+    player1.addBribe();
+    assert.deepEqual(2,player1.bribes);
+  })
 
+  it("Should Knock out one non player hooligan with bribe", function(){
+    player1.hooligans =[hooligan1,hooligan2];
+    player1.leader = hooligan2;
+    player1.knockOutOne();
+    assert.deepEqual(false,hooligan2.eliminated);
   })
 
 

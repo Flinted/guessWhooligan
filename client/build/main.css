@@ -3,96 +3,143 @@ body {
   /*background-image: url('/images/alley.jpg');*/
   background-image: url('/images/wall.jpg');
   background-size: cover;
+}
 
+.show-welcomer{
+  width:100%;
+  height:100%;
+  margin-left: -10px;
+  padding-right: 10px;
+  margin-top: -10px;
+  text-align: center;
+  font-family:'HVD Peace';
+  font-size: 60px;
+  background-image: url('/images/wall.jpg');
+  background-size: cover;
+  position: absolute;
+  z-index: 6000;
+}
+
+.show-welcomer h1{
+  color:white;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  pointer-events: none;
+  margin-top: 40px;
+  margin-bottom: 30px;
+}
+
+.show-welcomer h6{
+  color:white;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  font-size: 0.5em;
+  pointer-events: none;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  margin-right: 80px;
+  margin-left: 80px;
+  font-family: 'Eraser';
+}
+
+.hide-welcomer{
+  display: none;
 }
 
 #title{
   font-family: 'HVD Peace';
   color: white;
-  font-size: 7rem;
+  font-size: 5rem;
   text-align: center;
   margin:0px;
-  margin-top: 30px;
+  margin-top: 10px;
   -webkit-filter: drop-shadow(5px 5px 5px #222);
   filter: drop-shadow(5px 5px 5px #222);
 }
 
-.play-area{
-  width:47%;
-  margin-bottom: 20px;  
-  padding: 0px;
-  border: 2px solid black;
-}
-
-.play-area h1{
-  font-family: 'HVD Peace';
+.player-area1 h1{
+  font-family: 'Eraser';
   -webkit-filter: drop-shadow(5px 5px 5px #222);
   filter: drop-shadow(5px 5px 5px #222);
   color: white;
-  font-size: 2.8rem;
+  font-size: 1.5rem;
+  text-align: center;
+
+}
+
+.player-area2 h1{
+  font-family: 'Eraser';
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  color: white;
+  font-size: 1.5rem;
   text-align: center;
 }
 
-.main-window .play-area:nth-child(3){
-  background-color: rgba(0,0,255,0.5);
-  margin-left: 30px;
-  float: left;  
+.player-area1{
+  width:95%;
+  margin: auto;
+  padding: 0px;
+  border: 8px solid blue;
+  margin-bottom: 10px;
+  background-color: rgba(0,0,0,0.3);
 
 }
 
-.main-window .play-area:nth-child(2){
-  background-color: rgba(255,0,0,0.5);
-  margin-right: 10px;
-  float: right;
-
-}
-
-.thumbnail{
-  width: 100px;
-  height:100px;
-  clear:both;
-  margin-top: 30px;
+.player-area2{
+  width:95%;
+  margin: auto;
+  padding: 0px;
+  border: 8px solid red;
+  margin-bottom: 10px;
+  background-color: rgba(0,0,0,0.3);
 }
 
 .name{
-  height: 20px;
+  line-height: 30px;
+  font-family:'Eraser';
   text-align: center;
-  background-color: rgba(255,255,255,0.5);
+  background-color: rgba(255,255,255,0.6);
   width: 100%;
   display: block;
   margin:0px;
   position: absolute;
-      bottom: 0;
-      left: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
 }
 
+#card-list{
+  text-align: center;
+  padding:0px;
+  margin-top: -7px;
+  margin-bottom:  0px;
+}
 .game-card{
   position: relative;
-  width: 130px;
-  height: 130px;
-  margin: 4px 4px 4px 4px;
+  width: 140px;
+  height: 140px;
+  margin: 3px 3px 3px 3px;
   display: inline-flex;
   justify-content: center;
   border: 3px solid white;
   background-size: contain;
   padding: none;
-}
-
-#card-list{
-  margin-left: -30px;
+  box-shadow: 3px 3px 5px black;
 }
 
 .game-card:hover{
-  box-shadow: 3px 3px 5px black;
+  box-shadow: 5px 5px 15px black;
+  border: 3px solid black;
   overflow: visible;
   z-index: 300;
 }
 
 .game-card-out{
-  width: 130px;
-  height: 130px;
-  opacity: 0.5;
-  margin: 4px 4px 4px 4px;
+  width: 140px;
+  height: 140px;
+  opacity: 0.4;
+  margin: 3px 3px 3px 3px;
   display: inline-flex;
   justify-content: center;
   border: 3px solid white;
@@ -107,7 +154,135 @@ body {
 
 #guess-bar{
   width: 100%;
-  height: 100px;
+  height: 80px;
   text-align: center;
+  clear: both;  
+}
+
+#guess-bar h4{
+  font-family:'Eraser';
+  color: white;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  font-size: 30px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#guesser{
+  border: 3px solid white;
+  background-color: rgba(0,0,0,0.2);
+  color: white;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  font-family:'Eraser';
+  font-size: 25px;
+  height: 50px;
+  width: 40%;
+  text-align-last: center;
+}
+
+#guess-button{
+  margin-left:5px;
+  background-color: rgba(0,0,0,0.2);
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  color: white;
+  font-size: 25px;
+  font-family:'Eraser';
+  height: 50px;
+  width: 120px;
+  border: 3px solid white;
+}
+
+#guess-button:hover{
+  background-color: rgba(0,0,0,0.4);
+  border: 3px solid black;
+  color: red;
+  box-shadow: 3px 3px soild black;
+}
+
+#bribe-button:hover{
+  background-color: rgba(0,0,0,0.4);
+  border: 3px solid black;
+  color: red;
+  box-shadow: 3px 3px soild black;
+}
+
+#bribe-button{
+  margin-left:5px;
+  background-color: rgba(0,0,0,0.2);
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  color: white;
+  font-size: 25px;
+  font-family:'Eraser';
+  height: 50px;
+  width: 180px;
+  border: 3px solid white;
+}
+
+#game-run{
+  display: none;
+}
+
+#game-ended{
+  width:100%;
+  height:100%;
+  text-align: center;
+  margin-top: -5px;
+  margin-left: -5px;
+  color: white;
+  font-family:'Eraser';
+  font-size: 60px;
+  background-image: url('/images/wall.jpg');
+  background-size: cover;
+  position: absolute;
+  z-index: 6000;
+}
+
+#game-ended h3{
+  margin-top: -10px;
+  color: white;
+  padding-bottom: 0px;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+}
+
+#game-ended h6{
+  color: white;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  padding-bottom: 0px;
+  margin-bottom:0px;
+}
+
+#win-image{
+  margin-top: -50px;
+  display: block;
+  margin: auto;
   clear: both;
+width:300px;
+height:300px;
+border: 5px solid white; box-shadow: 3px 3px 5px black;
+}
+
+#restart{
+  background-color: rgba(0,0,0,0.2);
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+  color: white;
+  font-size: 25px;
+  margin-top: 0px;
+  font-family:'Eraser';
+  height: 50px;
+  width: 300px;
+  border: 3px solid white;
+}
+
+#restart:hover{
+  background-color: rgba(0,0,0,0.4);
+  border: 3px solid black;
+  color: red;
+  box-shadow: 3px 3px soild black;
 }

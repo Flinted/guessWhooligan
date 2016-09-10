@@ -1,31 +1,40 @@
 var Hooligan =function(params){
-    this.name = params.name,
-    this.img = params.image,
-    this.characteristics = params.characteristics,
-    this.leader = false,
-    this.eliminated = false
+  this.name = params.name,
+  this.img = params.image,
+  this.characteristics = params.characteristics,
+  this.leader = false,
+  this.eliminated = false
 }
 
 Hooligan.prototype = {
 
-  checkGuess: function(guess){
+
+  checkGuess: function(guess,boolean){
+    if(this.leader){
       for(var characteristic of this.characteristics){
         if(characteristic.description == guess){
-            if(characteristic.valid){
-              this.eliminated = true;
-              return;
-            }
+          return characteristic.valid;
         }
       }
-  },
+    }
 
-  makeLeader: function(){
-    this.leader=true;
-  },
-
-  eliminate: function(){
-          this.eliminated = true;
+  for(var characteristic of this.characteristics){
+    if(characteristic.description == guess){
+      if(characteristic.valid != boolean){
+        this.eliminated = true;
+        return;
+      }
+    }
   }
+},
+
+makeLeader: function(){
+  this.leader=true;
+},
+
+eliminate: function(){
+  this.eliminated = true;
+}
 }
 
 module.exports = Hooligan;

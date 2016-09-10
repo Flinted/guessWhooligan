@@ -32,12 +32,12 @@ describe("Hooligans!", function(){
   });
 
   it("Should eliminate on checkGuess if true", function(){
-    hooligan1.checkGuess('had a leather jacket');
+    hooligan1.checkGuess('had a leather jacket', false);
     assert.deepEqual(hooligan1.eliminated, true);
   })
 
   it("Should not eliminate on checkGuess if false", function(){
-    hooligan2.checkGuess('had a leather jacket');
+    hooligan2.checkGuess('had a leather jacket',false);
     assert.deepEqual(hooligan2.eliminated,false );
   })
 })

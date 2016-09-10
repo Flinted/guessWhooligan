@@ -1,11 +1,13 @@
 var Hooligan = require('./Hooligan');
 var Player =require('./player');
+var _ = require('lodash');
 
 
 var GuessWhooligan = function(hooligans, players){
   this.turnCounter =  0,
   this.players = players,
-  this.targetPlayer = players[0],
+  this.currentPlayer= players[0],
+  this.targetPlayer = players[1],
   this.hooligans = hooligans
 };
 
@@ -16,12 +18,18 @@ GuessWhooligan.prototype ={
         this.players[1].setup(this.hooligans);
   },
 
+  bribe: function(target){
+    target.knockOutOne();
+  },
+
   changeTurn:  function(){
       this.turnCounter ++;
       if(this.targetPlayer === this.players[0]){
         this.targetPlayer= this.players[1];
+        this.currentPlayer = this.players[0];
       }else{
         this.targetPlayer=this.players[0];
+        this.currentPlayer = this.players[1];
       }
       return(this.turnCounter<5);
   },
@@ -43,10 +51,11 @@ GuessWhooligan.prototype ={
 
   returnGuesses: function(){
     var characteristics = this.hooligans[0].characteristics;
-    var returnGuesses = [];
+    var guesses = [];
     for(var i=0; i<characteristics.length; i++){
-        returnGuesses.push(characteristics[i].description);
+        guesses.push(characteristics[i].description);
     }
+    var returnGuesses = _.shuffle(guesses);
     return returnGuesses;
   }
 

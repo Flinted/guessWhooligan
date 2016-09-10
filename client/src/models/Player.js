@@ -1,15 +1,18 @@
 var Hooligan =require('./Hooligan');
- 
-var Player = function(name){
+var _ = require('lodash');
+
+var Player = function(name, classid){
     this.name=name,
     this.hooligans= [],
     this.eliminated =[],
+    this.classid=classid,
     this.leader = null,
-    this.getEms = 0
+    this.bribes = 0
 }
 
 Player.prototype={
-  setup: function(hooligans){
+  setup: function(hooligansToAdd){
+    var hooligans = _.shuffle(hooligansToAdd);
     this.hooligans = hooligans.map(function(params){
        return new Hooligan(params);
     });
@@ -19,14 +22,30 @@ Player.prototype={
   },
 
   guessCheck: function(guess){
+    var binaryResult = this.leader.checkGuess(guess)
       for(var hooligan of this.hooligans){
-          hooligan.checkGuess(guess);
+          hooligan.checkGuess(guess,binaryResult);
       }
   },
 
-  addGetem: function(){
-    this.getEms ++;
+  addBribe: function(){
+    this.bribes ++;
+  },
+
+  knockOutOne: function(){
+      for(var hooligan of this.hooligans){
+          if(!hooligan.eliminated && hooligan != this.leader){
+            hooligan.eliminated = true;
+            return;
+          }
+      }
+  },
+
+  useBribe: function(){
+     this.bribes --;
   }
+
+
 
 
 }

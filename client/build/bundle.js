@@ -49,9 +49,9 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
 	var GameBox = __webpack_require__(159);
-	var Player = __webpack_require__(170);
-	var Hooligan = __webpack_require__(166);
-	var Seeds = __webpack_require__(171);
+	var Player = __webpack_require__(166);
+	var Hooligan = __webpack_require__(167);
+	var Seeds = __webpack_require__(170);
 	
 	window.onload = function () {
 	  var player1 = new Player("Player 1", "player-area1");
@@ -19786,7 +19786,8 @@
 	      foundLeader: null,
 	      welcomer: 'show-welcomer',
 	      p1Battle: null,
-	      p2Battle: null
+	      p2Battle: null,
+	      endBattleMessage: ''
 	    };
 	  },
 	
@@ -19823,14 +19824,15 @@
 	
 	  handleGuess: function handleGuess(event) {
 	    this.toggleButton();
-	    setTimeout(this.toggleButton, 500);
+	    setTimeout(this.toggleButton, 1000);
 	    var guess = document.getElementById('guesser').value;
 	    this.state.game.handleGuess(this.state.target, guess);
 	    this.refresh();
 	    if (!this.state.game.changeTurn()) {
 	      this.endBattle();
+	      return;
 	    }
-	    setTimeout(this.refresh, 500);
+	    setTimeout(this.refresh, 1000);
 	  },
 	
 	  refresh: function refresh() {
@@ -19853,6 +19855,7 @@
 	      this.refresh();
 	      if (!this.state.game.changeTurn()) {
 	        this.endBattle();
+	        return;
 	      }
 	      setTimeout(this.refresh, 250);
 	    }
@@ -19861,14 +19864,12 @@
 	  endBattle: function endBattle() {
 	    console.log("battle!");
 	    var teams = this.state.game.decideBattle();
-	    var p1Hooligans = teams[1];
-	    var p2Hooligans = teams[0];
-	    console.log(teams[2].leader);
-	    this.setState({ endGame: "game-ended", p1Battle: p1Hooligans, p2Battle: p2Hooligans, player: teams[2], foundLeader: teams[2].leader });
+	    var p1Hooligans = teams[0];
+	    var p2Hooligans = teams[1];
+	    this.setState({ endGame: "game-ended", p1Battle: p1Hooligans, p2Battle: p2Hooligans, player: teams[2], foundLeader: teams[2].leader, endBattleMessage: teams[3] });
 	  },
 	
 	  endGame: function endGame(target) {
-	    console.log("Game Over");
 	    this.setState({ endGame: "game-ended", foundLeader: target });
 	  },
 	
@@ -19896,7 +19897,8 @@
 	        leader: this.state.foundLeader,
 	        restart: this.restart,
 	        p1Battle: this.state.p1Battle,
-	        p2Battle: this.state.p2Battle
+	        p2Battle: this.state.p2Battle,
+	        endBattleMessage: this.state.endBattleMessage
 	      }),
 	      React.createElement(
 	        'h1',
@@ -19928,9 +19930,15 @@
 	var React = __webpack_require__(1);
 	var HooliganCard = __webpack_require__(161);
 	var PlayerArea = function PlayerArea(props) {
+	
 	  var hooliganNodes = props.hooligans.map(function (hooligan, index) {
 	    return React.createElement(HooliganCard, { index: index, name: hooligan.name, img: hooligan.img, eliminated: hooligan.eliminated, key: index, getThem: props.getThem });
 	  });
+	
+	  var turn = 5;
+	  if (props.turn == 5) {
+	    var turn = "5...LAST TURN!";
+	  }
 	
 	  return React.createElement(
 	    'div',
@@ -19941,7 +19949,8 @@
 	      props.player.name,
 	      ' hit list...  Turn: ',
 	      props.turn,
-	      '/6'
+	      '/',
+	      turn
 	    ),
 	    React.createElement(
 	      'ul',
@@ -20086,31 +20095,54 @@
 	      'div',
 	      { id: props.endGame },
 	      React.createElement(
-	        'button',
-	        { id: 'restart', onClick: props.restart },
-	        'Again?'
-	      ),
-	      React.createElement(
-	        'h6',
-	        null,
-	        'Neither of you found the other gangs leader, the day of the scrap has arrived.'
-	      ),
-	      React.createElement(
-	        'h6',
-	        null,
-	        props.winner.name,
-	        '\'s gang led by ',
-	        props.leader.name,
-	        ' easily overpowered their rivals. '
-	      ),
-	      React.createElement(
 	        'div',
 	        { id: 'battle-p1' },
+	        React.createElement(
+	          'h1',
+	          null,
+	          'Player 1\'s squad'
+	        ),
 	        p1hooliganNodes
 	      ),
 	      React.createElement(
 	        'div',
+	        { id: 'center-bar' },
+	        React.createElement(
+	          'h4',
+	          { className: 'battle-text' },
+	          'Neither of you found the other squads leader, the day of the scrap has arrived.'
+	        ),
+	        React.createElement(
+	          'h3',
+	          null,
+	          props.winner.name,
+	          ' wins'
+	        ),
+	        React.createElement('img', { id: 'win-image', src: props.leader.img }),
+	        React.createElement(
+	          'button',
+	          { id: 'restart', onClick: props.restart },
+	          'Again?'
+	        ),
+	        React.createElement(
+	          'h4',
+	          { className: 'battle-text' },
+	          props.winner.name,
+	          '\'s gang led by ',
+	          props.leader.name,
+	          ' won, ',
+	          props.endBattleMessage,
+	          '. '
+	        )
+	      ),
+	      React.createElement(
+	        'div',
 	        { id: 'battle-p2' },
+	        React.createElement(
+	          'h1',
+	          null,
+	          'Player 2\'s squad'
+	        ),
 	        p2hooliganNodes
 	      )
 	    );
@@ -20149,6 +20181,11 @@
 	            React.createElement(
 	                  'h6',
 	                  null,
+	                  'There\'s only 5 days until the showdown, if you can\'t find the leader just get as many of them off the street as you can!'
+	            ),
+	            React.createElement(
+	                  'h6',
+	                  null,
 	                  'Jump a rival hooligan by clicking on them,  careful though,  if you jump the wrong guy the rival gang may bribe the cops to take out one of yours...'
 	            ),
 	            React.createElement(
@@ -20167,8 +20204,8 @@
 
 	'use strict';
 	
-	var Hooligan = __webpack_require__(166);
-	var Player = __webpack_require__(167);
+	var Hooligan = __webpack_require__(167);
+	var Player = __webpack_require__(171);
 	var _ = __webpack_require__(168);
 	
 	var GuessWhooligan = function GuessWhooligan(hooligans, players) {
@@ -20195,7 +20232,6 @@
 	      this.targetPlayer = this.players[0];
 	      this.currentPlayer = this.players[1];
 	    }
-	    console.log(this.turnCounter < 6);
 	    return this.turnCounter < 6;
 	  },
 	
@@ -20211,13 +20247,38 @@
 	    var player1 = this.players[0].getActiveHooligans();
 	    var player2 = this.players[1].getActiveHooligans();
 	    var winner = null;
+	    var result = this.setOutcome(player1, player2);
+	
 	    if (player1.length > player2.length) {
 	      winner = this.players[0];
-	    } else {
+	    } else if (player2.length > player1.length) {
 	      winner = this.players[1];
+	    } else {
+	      var index = Math.floor(Math.random() * 1);
+	      winner = this.players[index];
 	    }
+	    console.log(result);
+	    return [player1, player2, winner, result];
+	  },
 	
-	    return [player1, player2, winner];
+	  setOutcome: function setOutcome(player1, player2) {
+	    var resultCode = player1.length - player2.length;
+	    if (resultCode < 0) {
+	      resultCode = resultCode * -1;
+	    };
+	    console.log(resultCode);
+	    switch (resultCode) {
+	      case 3:
+	        return "it was a walkover";
+	      case 2:
+	        return "although it was a close fight";
+	      case 1:
+	        return "i wouldn't have bet on it but they did it";
+	      case 0:
+	        return " it was a tie, and they just got lucky!";
+	      default:
+	        return "it was a massacre!";
+	    }
 	  },
 	
 	  returnHooligans: function returnHooligans(playertoReturn) {
@@ -20247,95 +20308,11 @@
 
 /***/ },
 /* 166 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	var Hooligan = function Hooligan(params) {
-	  this.name = params.name, this.img = params.image, this.characteristics = params.characteristics, this.leader = false, this.eliminated = false;
-	};
-	
-	Hooligan.prototype = {
-	
-	  checkGuess: function checkGuess(guess, boolean) {
-	    if (this.leader) {
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-	
-	      try {
-	        for (var _iterator = this.characteristics[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var characteristic = _step.value;
-	
-	          if (characteristic.description == guess) {
-	            return characteristic.valid;
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-	    }
-	
-	    var _iteratorNormalCompletion2 = true;
-	    var _didIteratorError2 = false;
-	    var _iteratorError2 = undefined;
-	
-	    try {
-	      for (var _iterator2 = this.characteristics[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	        var characteristic = _step2.value;
-	
-	        if (characteristic.description == guess) {
-	          if (characteristic.valid != boolean) {
-	            this.eliminated = true;
-	            return;
-	          }
-	        }
-	      }
-	    } catch (err) {
-	      _didIteratorError2 = true;
-	      _iteratorError2 = err;
-	    } finally {
-	      try {
-	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	          _iterator2.return();
-	        }
-	      } finally {
-	        if (_didIteratorError2) {
-	          throw _iteratorError2;
-	        }
-	      }
-	    }
-	  },
-	
-	  makeLeader: function makeLeader() {
-	    this.leader = true;
-	  },
-	
-	  eliminate: function eliminate() {
-	    this.eliminated = true;
-	  }
-	};
-	
-	module.exports = Hooligan;
-
-/***/ },
-/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Hooligan = __webpack_require__(166);
+	var Hooligan = __webpack_require__(167);
 	var _ = __webpack_require__(168);
 	
 	var Player = function Player(name, classid) {
@@ -20455,6 +20432,90 @@
 	};
 	
 	module.exports = Player;
+
+/***/ },
+/* 167 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var Hooligan = function Hooligan(params) {
+	  this.name = params.name, this.img = params.image, this.characteristics = params.characteristics, this.leader = false, this.eliminated = false;
+	};
+	
+	Hooligan.prototype = {
+	
+	  checkGuess: function checkGuess(guess, boolean) {
+	    if (this.leader) {
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
+	
+	      try {
+	        for (var _iterator = this.characteristics[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var characteristic = _step.value;
+	
+	          if (characteristic.description == guess) {
+	            return characteristic.valid;
+	          }
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+	    }
+	
+	    var _iteratorNormalCompletion2 = true;
+	    var _didIteratorError2 = false;
+	    var _iteratorError2 = undefined;
+	
+	    try {
+	      for (var _iterator2 = this.characteristics[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	        var characteristic = _step2.value;
+	
+	        if (characteristic.description == guess) {
+	          if (characteristic.valid != boolean) {
+	            this.eliminated = true;
+	            return;
+	          }
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError2 = true;
+	      _iteratorError2 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	          _iterator2.return();
+	        }
+	      } finally {
+	        if (_didIteratorError2) {
+	          throw _iteratorError2;
+	        }
+	      }
+	    }
+	  },
+	
+	  makeLeader: function makeLeader() {
+	    this.leader = true;
+	  },
+	
+	  eliminate: function eliminate() {
+	    this.eliminated = true;
+	  }
+	};
+	
+	module.exports = Hooligan;
 
 /***/ },
 /* 168 */
@@ -37214,11 +37275,84 @@
 
 /***/ },
 /* 170 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var seeds = { "hooligans": [{
+	    name: 'Jake',
+	    image: '/images/hooligan1.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Mike',
+	    image: '/images/hooligan2.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Vlad',
+	    image: '/images/hooligan3.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: true }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
+	    name: 'Bill',
+	    image: '/images/hooligan4.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Jason',
+	    image: '/images/hooligan5.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: true }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
+	    name: 'Papa Jones',
+	    image: '/images/hooligan6.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Kevin',
+	    image: '/images/hooligan7.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: true }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Dave',
+	    image: '/images/hooligan8.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: true }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Steve',
+	    image: '/images/hooligan9.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Charlie',
+	    image: '/images/hooligan10.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Billy',
+	    image: '/images/hooligan11.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Simon',
+	    image: '/images/hooligan12.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Paul',
+	    image: '/images/hooligan13.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Pete',
+	    image: '/images/hooligan14.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Malcolm',
+	    image: '/images/hooligan15.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: true }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
+	    name: 'Max',
+	    image: '/images/hooligan16.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Greg',
+	    image: '/images/hooligan17.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Jim',
+	    image: '/images/hooligan18.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
+	    name: 'Saul',
+	    image: '/images/hooligan19.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: true }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
+	    name: 'John',
+	    image: '/images/hooligan20.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
+	    name: 'Colin',
+	    image: '/images/hooligan21.jpg',
+	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }] };
+	
+	module.exports = seeds;
+
+/***/ },
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Hooligan = __webpack_require__(166);
+	var Hooligan = __webpack_require__(167);
 	var _ = __webpack_require__(168);
 	
 	var Player = function Player(name, classid) {
@@ -37338,79 +37472,6 @@
 	};
 	
 	module.exports = Player;
-
-/***/ },
-/* 171 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	var seeds = { "hooligans": [{
-	    name: 'Jake',
-	    image: '/images/hooligan1.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Mike',
-	    image: '/images/hooligan2.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Vlad',
-	    image: '/images/hooligan3.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: true }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
-	    name: 'Bill',
-	    image: '/images/hooligan4.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Jason',
-	    image: '/images/hooligan5.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: true }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
-	    name: 'Papa Jones',
-	    image: '/images/hooligan6.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Kevin',
-	    image: '/images/hooligan7.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: true }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Dave',
-	    image: '/images/hooligan8.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: true }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Steve',
-	    image: '/images/hooligan9.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Charlie',
-	    image: '/images/hooligan10.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Billy',
-	    image: '/images/hooligan11.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Simon',
-	    image: '/images/hooligan12.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Paul',
-	    image: '/images/hooligan13.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Pete',
-	    image: '/images/hooligan14.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: true }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Malcolm',
-	    image: '/images/hooligan15.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: true }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
-	    name: 'Max',
-	    image: '/images/hooligan16.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: true }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Greg',
-	    image: '/images/hooligan17.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Jim',
-	    image: '/images/hooligan18.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
-	    name: 'Saul',
-	    image: '/images/hooligan19.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: false }, { description: 'had tattoos', valid: true }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: true }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: true }] }, {
-	    name: 'John',
-	    image: '/images/hooligan20.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: true }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: false }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: false }, { description: 'were quite young', valid: false }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }, {
-	    name: 'Colin',
-	    image: '/images/hooligan21.jpg',
-	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }] };
-	
-	module.exports = seeds;
 
 /***/ }
 /******/ ]);

@@ -1,6 +1,5 @@
 body {
   font-family: "Trebuchet MS";
-  /*background-image: url('/images/alley.jpg');*/
   background-image: url('/images/wall.jpg');
   background-size: cover;
 }
@@ -22,21 +21,21 @@ body {
 
 .show-welcomer h1{
   color:white;
-  -webkit-filter: drop-shadow(5px 5px 5px #222);
-  filter: drop-shadow(5px 5px 5px #222);
+  -webkit-filter: drop-shadow(5px 5px 10px #222);
+  filter: drop-shadow(5px 5px 10px #222);
   pointer-events: none;
-  margin-top: 40px;
-  margin-bottom: 30px;
+  margin-top: 30px;
+  margin-bottom: 20px;
 }
 
 .show-welcomer h6{
   color:white;
-  -webkit-filter: drop-shadow(5px 5px 5px #222);
-  filter: drop-shadow(5px 5px 5px #222);
+  -webkit-filter: drop-shadow(5px 5px 10px #222);
+  filter: drop-shadow(5px 5px 10px #222);
   font-size: 0.5em;
   pointer-events: none;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
   margin-right: 80px;
   margin-left: 80px;
   font-family: 'Eraser';
@@ -126,13 +125,18 @@ body {
   background-size: contain;
   padding: none;
   box-shadow: 3px 3px 5px black;
+  
 }
 
 .game-card:hover{
+  animation-name: card-hover;
+  animation-duration: 1s;
+  color: red;
   box-shadow: 5px 5px 15px black;
   border: 3px solid black;
   overflow: visible;
   z-index: 300;
+  transform: scale3d(1.4, 1.4, 1.4);
 }
 
 .game-card-out{
@@ -180,35 +184,50 @@ body {
   height: 50px;
   width: 40%;
   text-align-last: center;
+  animation-name: button-hover-off;
+  animation-duration: 1s;
 }
 
 
 #battle-p1{
-  width:40%;
+  width:36%;
   float: left;
   margin: auto;
   padding: 0px;
   border: 8px solid blue;
   margin-bottom: 10px;
   background-color: rgba(0,0,0,0.3);
+  display: inline-block;
+}
+
+#battle-p1 h1 , #battle-p2 h1{
+    font-family: 'Eraser';
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(5px 5px 5px #222);
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
 }
 
 #battle-p2{
-  width:40%;
+  width:36%;
   float: right;
   margin: auto;
   padding: 0px;
   border: 8px solid red;
   margin-bottom: 10px;
   background-color: rgba(0,0,0,0.3);
+  display: inline-block;
 }
 
 
 #guesser:hover{
+  animation-name: button-hover;
+  animation-duration: 1s;
   background-color: rgba(0,0,0,0.4);
   border: 3px solid black;
   color: red;
-  box-shadow: 3px 3px soild black;
+  box-shadow: 3px 3px solid black;
 }
 
 #guess-button{
@@ -221,10 +240,14 @@ body {
   font-family:'Eraser';
   height: 50px;
   width: 120px;
-  border: 3px solid white;
+  border: 3px solid white;  
+  animation-name: button-hover-off;
+  animation-duration: 1s;
 }
 
 #guess-button:hover{
+  animation-name: button-hover;
+  animation-duration: 1s;
   background-color: rgba(0,0,0,0.4);
   border: 3px solid black;
   color: red;
@@ -232,6 +255,8 @@ body {
 }
 
 #bribe-button:hover{
+  animation-name: button-hover;
+  animation-duration: 1s;
   background-color: rgba(0,0,0,0.4);
   border: 3px solid black;
   color: red;
@@ -249,6 +274,8 @@ body {
   height: 50px;
   width: 180px;
   border: 3px solid white;
+  animation-name: button-hover-off;
+  animation-duration: 1s;
 }
 
 #game-run{
@@ -259,8 +286,8 @@ body {
   width:100%;
   height:100%;
   text-align: center;
-  margin-top: -5px;
-  margin-left: -5px;
+  margin-top: -10px;
+  margin-left: -10px;
   color: white;
   font-family:'Eraser';
   background-image: url('/images/wall.jpg');
@@ -270,7 +297,7 @@ body {
 }
 
 #game-ended h3{
-  margin-top: 10px;
+  margin-top: 5px;
   font-size: 60px;
   color: white;
   padding-bottom: 0px;
@@ -287,8 +314,29 @@ body {
   margin-bottom:0px;
 }
 
+#center-bar{
+  width: 300px;
+  display: inline-block;
+  align-content: center;
+  text-align: center;
+}
+
+#center-bar h3{
+font-size: 50px;
+-webkit-filter: drop-shadow(5px 5px 5px #222);
+filter: drop-shadow(5px 5px 5px #222);
+}
+
+.battle-text{
+  width: 100%;
+  display: inline-block;
+  font-size: 20px;
+  -webkit-filter: drop-shadow(5px 5px 5px #222);
+  filter: drop-shadow(5px 5px 5px #222);
+}
+
 #win-image{
-  margin-top: -50px;
+  margin-top: -60px;
   display: block;
   margin: auto;
   clear: both;
@@ -308,11 +356,78 @@ border: 5px solid white; box-shadow: 3px 3px 5px black;
   height: 50px;
   width: 200px;
   border: 3px solid white;
+  animation-name: button-hover-off;
+  animation-duration: 1s;
 }
 
 #restart:hover{
+  animation-name: button-hover;
+  animation-duration: 1s;
   background-color: rgba(0,0,0,0.4);
   border: 3px solid black;
   color: red;
   box-shadow: 3px 3px soild black;
+}
+
+
+@keyframes button-hover {
+    from {
+    background-color: rgba(0,0,0,0.2);
+    border: 3px solid white;
+    color: white;
+    }
+    to {
+  background-color: rgba(0,0,0,0.4);
+  border: 3px solid black;
+  color: red;
+  box-shadow: 3px 3px soild black;
+  }
+}
+
+@keyframes button-hover-off {
+    from {
+    background-color: rgba(0,0,0,0.4);
+    border: 3px solid black;
+    color: red;
+    box-shadow: 3px 3px soild black;
+    }
+    to {
+      background-color: rgba(0,0,0,0.2);
+      border: 3px solid white;
+      color: white;
+  }
+}
+
+@keyframes card-hover {
+    from {
+    background-color: rgba(0,0,0,0.2);
+    border: 3px solid white;
+    color: white;
+    transform:  scale3d(1,1,1);
+    }
+    to {
+  background-color: rgba(0,0,0,0.4);
+  border: 3px solid black;
+  color: red;
+  box-shadow: 3px 3px soild black;
+  transform:  scale3d(1.4,1.4,1.4);
+  }
+}
+
+@keyframes card-hover-off {
+    from {
+    background-color: rgba(0,0,0,0.4);
+    border: 3px solid black;
+    color: red;
+    box-shadow: 3px 3px soild black;
+    transform:  scale3d(1.4,1.4,1.4);
+
+    }
+    to {
+      background-color: rgba(0,0,0,0.2);
+      border: 3px solid white;
+      color: white;
+      transform:  scale3d(1,1,1);
+
+  }
 }

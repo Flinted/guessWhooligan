@@ -21,7 +21,8 @@ var GameBox = React.createClass({
       foundLeader: null, 
       welcomer: 'show-welcomer',
       p1Battle: null,
-      p2Battle: null
+      p2Battle: null,
+      endBattleMessage: ''
     };
   },
 
@@ -59,12 +60,15 @@ var GameBox = React.createClass({
 
   handleGuess: function(event){
     this.toggleButton();
-    setTimeout(this.toggleButton,500);
+    setTimeout(this.toggleButton,1000);
     var guess = document.getElementById('guesser').value;
     this.state.game.handleGuess(this.state.target, guess);
     this.refresh();
-    if(!this.state.game.changeTurn()){ this.endBattle()}
-    setTimeout(this.refresh,500);
+    if(!this.state.game.changeTurn()){ 
+      this.endBattle()
+      return;
+    }
+    setTimeout(this.refresh,1000);
   },
 
   refresh: function(){
@@ -85,7 +89,10 @@ var GameBox = React.createClass({
         target.eliminate();
         this.state.target.addBribe();
         this.refresh();
-        if(!this.state.game.changeTurn()){ this.endBattle()}
+        if(!this.state.game.changeTurn()){ 
+          this.endBattle()
+          return;
+          }
         setTimeout(this.refresh,250);
       }
   },
@@ -93,14 +100,12 @@ var GameBox = React.createClass({
   endBattle: function(){
     console.log("battle!");
     var teams = this.state.game.decideBattle();
-    var p1Hooligans = teams[1];
-    var p2Hooligans = teams[0];
-    console.log(teams[2].leader)
-    this.setState({endGame: "game-ended", p1Battle: p1Hooligans, p2Battle: p2Hooligans, player: teams[2], foundLeader: teams[2].leader});
+    var p1Hooligans = teams[0];
+    var p2Hooligans = teams[1];
+    this.setState({endGame: "game-ended", p1Battle: p1Hooligans, p2Battle: p2Hooligans, player: teams[2], foundLeader: teams[2].leader, endBattleMessage: teams[3]});
   },
 
   endGame: function(target){
-      console.log("Game Over");
     this.setState({endGame: "game-ended", foundLeader: target })
   },
 
@@ -128,6 +133,7 @@ var GameBox = React.createClass({
           restart={this.restart}
           p1Battle ={this.state.p1Battle}
           p2Battle ={this.state.p2Battle}
+          endBattleMessage = {this.state.endBattleMessage}
         />
         <h1 id="title">Guess Whooligan</h1>
         <PlayerArea 

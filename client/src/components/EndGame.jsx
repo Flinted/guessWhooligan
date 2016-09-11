@@ -27,18 +27,23 @@ var EndGame = function(props){
           <HooliganCard index={index} name={hooligan.name} img={hooligan.img}eliminated={hooligan.eliminated} key={index} getThem={props.getThem}/>
           )
       })  
-
+      
 
       return(
         <div id={props.endGame}>
-        <button id="restart" onClick={props.restart}>Again?</button>
-        <h6>Neither of you found the other gangs leader, the day of the scrap has arrived.</h6>
-        <h6>{props.winner.name}'s gang led by {props.leader.name} easily overpowered their rivals. </h6>
-
         <div id="battle-p1">
+        <h1>Player 1's squad</h1>
           {p1hooliganNodes}
         </div>
+        <div id="center-bar">
+        <h4 className="battle-text">Neither of you found the other squads leader, the day of the scrap has arrived.</h4>
+        <h3>{props.winner.name} wins</h3>
+        <img id='win-image' src={props.leader.img}/>
+        <button id="restart" onClick={props.restart}>Again?</button>
+        <h4 className="battle-text">{props.winner.name}'s gang led by {props.leader.name} won, {props.endBattleMessage}. </h4>
+        </div>
         <div id="battle-p2">
+          <h1>Player 2's squad</h1>
           {p2hooliganNodes}
         </div>
 

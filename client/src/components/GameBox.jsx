@@ -10,7 +10,19 @@ var GameBox = React.createClass({
   getInitialState: function() {
     var game = new GuessWhooligan(this.props.hooligans, this.props.players)
     game.setupHooligans()
-    return {game: game, target: game.targetPlayer, player: game.currentPlayer, guesses:[], hooligans:[], endGame:"game-run", foundLeader: null, welcomer: 'show-welcomer'};
+    return {
+      game: game, 
+      target: game.targetPlayer, 
+      turn: 1,
+      player: game.currentPlayer, 
+      guesses:[], 
+      hooligans:[], 
+      endGame:"game-run", 
+      foundLeader: null, 
+      welcomer: 'show-welcomer',
+      p1Battle: null,
+      p2Battle: null
+    };
   },
 
   componentDidMount: function(){
@@ -50,17 +62,18 @@ var GameBox = React.createClass({
     setTimeout(this.toggleButton,500);
     var guess = document.getElementById('guesser').value;
     this.state.game.handleGuess(this.state.target, guess);
-    this.refresh()
-    this.state.game.changeTurn();
+    this.refresh();
+    if(!this.state.game.changeTurn()){ this.endBattle()}
     setTimeout(this.refresh,500);
   },
 
   refresh: function(){
       var target = this.state.game.targetPlayer;
       var current = this.state.game.currentPlayer;
+      var turn = this.state.game.turn();
       var hooligans = this.state.game.returnHooligans(target);
       var characteristics =this.state.game.returnGuesses();
-      this.setState({guesses: characteristics, target: target, player: current, hooligans: hooligans})
+      this.setState({guesses: characteristics, turn:turn, target: target, player: current, hooligans: hooligans});
   },
 
   getThem: function(event){
@@ -69,12 +82,21 @@ var GameBox = React.createClass({
       if(target.leader){
         this.endGame(target);
       }else{
-        target.eliminate()
+        target.eliminate();
         this.state.target.addBribe();
         this.refresh();
-        this.state.game.changeTurn();
-        setTimeout(this.refresh,250)
+        if(!this.state.game.changeTurn()){ this.endBattle()}
+        setTimeout(this.refresh,250);
       }
+  },
+
+  endBattle: function(){
+    console.log("battle!");
+    var teams = this.state.game.decideBattle();
+    var p1Hooligans = teams[1];
+    var p2Hooligans = teams[0];
+    console.log(teams[2].leader)
+    this.setState({endGame: "game-ended", p1Battle: p1Hooligans, p2Battle: p2Hooligans, player: teams[2], foundLeader: teams[2].leader});
   },
 
   endGame: function(target){
@@ -95,11 +117,29 @@ var GameBox = React.createClass({
     console.log("rendering");
     return (
       <div className="main-window">
-        <Welcomer  hide={this.hideWelcomer} class={this.state.welcomer}/>
-        <EndGame endGame={this.state.endGame} winner={this.state.player} leader={this.state.foundLeader} restart={this.restart}/>
+        <Welcomer  
+          hide={this.hideWelcomer} 
+          class={this.state.welcomer}
+        />
+        <EndGame 
+          endGame={this.state.endGame} 
+          winner={this.state.player} 
+          leader={this.state.foundLeader} 
+          restart={this.restart}
+          p1Battle ={this.state.p1Battle}
+          p2Battle ={this.state.p2Battle}
+        />
         <h1 id="title">Guess Whooligan</h1>
-        <PlayerArea key="1" id='player1' player={this.state.player}hooligans= {this.state.hooligans} getThem={this.getThem}/>
-        <GuessBar guesses={this.state.guesses} onClick={this.handleGuess} useBribe= {this.useBribe} bribes={this.state.player.bribes} />
+        <PlayerArea 
+          player={this.state.player} 
+          turn={this.state.turn}
+          hooligans= {this.state.hooligans} 
+          getThem={this.getThem}/>
+        <GuessBar 
+          guesses={this.state.guesses} 
+          onClick={this.handleGuess} 
+          useBribe= {this.useBribe} 
+          bribes={this.state.player.bribes} />
       </div>
     );
   }

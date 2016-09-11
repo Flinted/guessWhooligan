@@ -32,8 +32,19 @@ Player.prototype={
     this.bribes ++;
   },
 
-  knockOutOne: function(){
+  getActiveHooligans: function(){
+      var hooligans = [];
       for(var hooligan of this.hooligans){
+          if(!hooligan.eliminated){
+            hooligans.push(hooligan);
+          }
+      }
+      return hooligans;
+  },
+
+  knockOutOne: function(){
+    var knockOutList = _.shuffle(this.hooligans);
+      for(var hooligan of knockOutList){
           if(!hooligan.eliminated && hooligan != this.leader){
             hooligan.eliminated = true;
             return;

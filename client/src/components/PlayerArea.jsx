@@ -9,7 +9,7 @@ var PlayerArea = function(props){
 
   return(
     <div className={props.player.classid}>
-      <h1>{props.player.name} hit list...</h1>
+      <h1>{props.player.name} hit list...  Turn: {props.turn}/6</h1>
         <ul id="card-list">
           
               {hooliganNodes}

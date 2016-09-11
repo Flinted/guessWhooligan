@@ -3,7 +3,6 @@ var React = require('react');
 var HooliganCard = function(props){
   var className =''
   if(props.eliminated){
-    console.log(props.eliminated)
     className= "game-card-out";
   }else{
     className= "game-card";

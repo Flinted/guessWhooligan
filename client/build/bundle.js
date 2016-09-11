@@ -19775,7 +19775,19 @@
 	  getInitialState: function getInitialState() {
 	    var game = new GuessWhooligan(this.props.hooligans, this.props.players);
 	    game.setupHooligans();
-	    return { game: game, target: game.targetPlayer, player: game.currentPlayer, guesses: [], hooligans: [], endGame: "game-run", foundLeader: null, welcomer: 'show-welcomer' };
+	    return {
+	      game: game,
+	      target: game.targetPlayer,
+	      turn: 1,
+	      player: game.currentPlayer,
+	      guesses: [],
+	      hooligans: [],
+	      endGame: "game-run",
+	      foundLeader: null,
+	      welcomer: 'show-welcomer',
+	      p1Battle: null,
+	      p2Battle: null
+	    };
 	  },
 	
 	  componentDidMount: function componentDidMount() {
@@ -19815,16 +19827,19 @@
 	    var guess = document.getElementById('guesser').value;
 	    this.state.game.handleGuess(this.state.target, guess);
 	    this.refresh();
-	    this.state.game.changeTurn();
+	    if (!this.state.game.changeTurn()) {
+	      this.endBattle();
+	    }
 	    setTimeout(this.refresh, 500);
 	  },
 	
 	  refresh: function refresh() {
 	    var target = this.state.game.targetPlayer;
 	    var current = this.state.game.currentPlayer;
+	    var turn = this.state.game.turn();
 	    var hooligans = this.state.game.returnHooligans(target);
 	    var characteristics = this.state.game.returnGuesses();
-	    this.setState({ guesses: characteristics, target: target, player: current, hooligans: hooligans });
+	    this.setState({ guesses: characteristics, turn: turn, target: target, player: current, hooligans: hooligans });
 	  },
 	
 	  getThem: function getThem(event) {
@@ -19836,9 +19851,20 @@
 	      target.eliminate();
 	      this.state.target.addBribe();
 	      this.refresh();
-	      this.state.game.changeTurn();
+	      if (!this.state.game.changeTurn()) {
+	        this.endBattle();
+	      }
 	      setTimeout(this.refresh, 250);
 	    }
+	  },
+	
+	  endBattle: function endBattle() {
+	    console.log("battle!");
+	    var teams = this.state.game.decideBattle();
+	    var p1Hooligans = teams[1];
+	    var p2Hooligans = teams[0];
+	    console.log(teams[2].leader);
+	    this.setState({ endGame: "game-ended", p1Battle: p1Hooligans, p2Battle: p2Hooligans, player: teams[2], foundLeader: teams[2].leader });
 	  },
 	
 	  endGame: function endGame(target) {
@@ -19860,15 +19886,33 @@
 	    return React.createElement(
 	      'div',
 	      { className: 'main-window' },
-	      React.createElement(Welcomer, { hide: this.hideWelcomer, 'class': this.state.welcomer }),
-	      React.createElement(EndGame, { endGame: this.state.endGame, winner: this.state.player, leader: this.state.foundLeader, restart: this.restart }),
+	      React.createElement(Welcomer, {
+	        hide: this.hideWelcomer,
+	        'class': this.state.welcomer
+	      }),
+	      React.createElement(EndGame, {
+	        endGame: this.state.endGame,
+	        winner: this.state.player,
+	        leader: this.state.foundLeader,
+	        restart: this.restart,
+	        p1Battle: this.state.p1Battle,
+	        p2Battle: this.state.p2Battle
+	      }),
 	      React.createElement(
 	        'h1',
 	        { id: 'title' },
 	        'Guess Whooligan'
 	      ),
-	      React.createElement(PlayerArea, { key: '1', id: 'player1', player: this.state.player, hooligans: this.state.hooligans, getThem: this.getThem }),
-	      React.createElement(GuessBar, { guesses: this.state.guesses, onClick: this.handleGuess, useBribe: this.useBribe, bribes: this.state.player.bribes })
+	      React.createElement(PlayerArea, {
+	        player: this.state.player,
+	        turn: this.state.turn,
+	        hooligans: this.state.hooligans,
+	        getThem: this.getThem }),
+	      React.createElement(GuessBar, {
+	        guesses: this.state.guesses,
+	        onClick: this.handleGuess,
+	        useBribe: this.useBribe,
+	        bribes: this.state.player.bribes })
 	    );
 	  }
 	});
@@ -19895,7 +19939,9 @@
 	      'h1',
 	      null,
 	      props.player.name,
-	      ' hit list...'
+	      ' hit list...  Turn: ',
+	      props.turn,
+	      '/6'
 	    ),
 	    React.createElement(
 	      'ul',
@@ -19918,7 +19964,6 @@
 	var HooliganCard = function HooliganCard(props) {
 	  var className = '';
 	  if (props.eliminated) {
-	    console.log(props.eliminated);
 	    className = "game-card-out";
 	  } else {
 	    className = "game-card";
@@ -19996,10 +20041,15 @@
 	'use strict';
 	
 	var React = __webpack_require__(1);
+	var HooliganCard = __webpack_require__(161);
 	
 	var EndGame = function EndGame(props) {
 	
-	  if (props.leader) {
+	  if (!props.leader) {
+	    return React.createElement('div', { id: props.endGame });
+	  }
+	
+	  if (!props.p1Battle) {
 	    return React.createElement(
 	      'div',
 	      { id: props.endGame },
@@ -20024,8 +20074,47 @@
 	        ' before he could get his squad together.'
 	      )
 	    );
+	  } else {
+	    var p1hooliganNodes = props.p1Battle.map(function (hooligan, index) {
+	      return React.createElement(HooliganCard, { index: index, name: hooligan.name, img: hooligan.img, eliminated: hooligan.eliminated, key: index, getThem: props.getThem });
+	    });
+	    var p2hooliganNodes = props.p2Battle.map(function (hooligan, index) {
+	      return React.createElement(HooliganCard, { index: index, name: hooligan.name, img: hooligan.img, eliminated: hooligan.eliminated, key: index, getThem: props.getThem });
+	    });
+	
+	    return React.createElement(
+	      'div',
+	      { id: props.endGame },
+	      React.createElement(
+	        'button',
+	        { id: 'restart', onClick: props.restart },
+	        'Again?'
+	      ),
+	      React.createElement(
+	        'h6',
+	        null,
+	        'Neither of you found the other gangs leader, the day of the scrap has arrived.'
+	      ),
+	      React.createElement(
+	        'h6',
+	        null,
+	        props.winner.name,
+	        '\'s gang led by ',
+	        props.leader.name,
+	        ' easily overpowered their rivals. '
+	      ),
+	      React.createElement(
+	        'div',
+	        { id: 'battle-p1' },
+	        p1hooliganNodes
+	      ),
+	      React.createElement(
+	        'div',
+	        { id: 'battle-p2' },
+	        p2hooliganNodes
+	      )
+	    );
 	  }
-	  return React.createElement('div', { id: props.endGame });
 	};
 	
 	module.exports = EndGame;
@@ -20083,7 +20172,7 @@
 	var _ = __webpack_require__(168);
 	
 	var GuessWhooligan = function GuessWhooligan(hooligans, players) {
-	  this.turnCounter = 0, this.players = players, this.currentPlayer = players[0], this.targetPlayer = players[1], this.hooligans = hooligans;
+	  this.turnCounter = 1, this.players = players, this.currentPlayer = players[0], this.targetPlayer = players[1], this.hooligans = hooligans;
 	};
 	
 	GuessWhooligan.prototype = {
@@ -20098,19 +20187,37 @@
 	  },
 	
 	  changeTurn: function changeTurn() {
-	    this.turnCounter++;
 	    if (this.targetPlayer === this.players[0]) {
 	      this.targetPlayer = this.players[1];
 	      this.currentPlayer = this.players[0];
+	      this.turnCounter++;
 	    } else {
 	      this.targetPlayer = this.players[0];
 	      this.currentPlayer = this.players[1];
 	    }
-	    return this.turnCounter < 5;
+	    console.log(this.turnCounter < 6);
+	    return this.turnCounter < 6;
 	  },
 	
 	  handleGuess: function handleGuess(player, guess) {
 	    player.guessCheck(guess);
+	  },
+	
+	  turn: function turn() {
+	    return this.turnCounter;
+	  },
+	
+	  decideBattle: function decideBattle() {
+	    var player1 = this.players[0].getActiveHooligans();
+	    var player2 = this.players[1].getActiveHooligans();
+	    var winner = null;
+	    if (player1.length > player2.length) {
+	      winner = this.players[0];
+	    } else {
+	      winner = this.players[1];
+	    }
+	
+	    return [player1, player2, winner];
 	  },
 	
 	  returnHooligans: function returnHooligans(playertoReturn) {
@@ -20278,7 +20385,8 @@
 	    this.bribes++;
 	  },
 	
-	  knockOutOne: function knockOutOne() {
+	  getActiveHooligans: function getActiveHooligans() {
+	    var hooligans = [];
 	    var _iteratorNormalCompletion2 = true;
 	    var _didIteratorError2 = false;
 	    var _iteratorError2 = undefined;
@@ -20287,9 +20395,8 @@
 	      for (var _iterator2 = this.hooligans[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	        var hooligan = _step2.value;
 	
-	        if (!hooligan.eliminated && hooligan != this.leader) {
-	          hooligan.eliminated = true;
-	          return;
+	        if (!hooligan.eliminated) {
+	          hooligans.push(hooligan);
 	        }
 	      }
 	    } catch (err) {
@@ -20303,6 +20410,39 @@
 	      } finally {
 	        if (_didIteratorError2) {
 	          throw _iteratorError2;
+	        }
+	      }
+	    }
+	
+	    return hooligans;
+	  },
+	
+	  knockOutOne: function knockOutOne() {
+	    var knockOutList = _.shuffle(this.hooligans);
+	    var _iteratorNormalCompletion3 = true;
+	    var _didIteratorError3 = false;
+	    var _iteratorError3 = undefined;
+	
+	    try {
+	      for (var _iterator3 = knockOutList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	        var hooligan = _step3.value;
+	
+	        if (!hooligan.eliminated && hooligan != this.leader) {
+	          hooligan.eliminated = true;
+	          return;
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError3 = true;
+	      _iteratorError3 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	          _iterator3.return();
+	        }
+	      } finally {
+	        if (_didIteratorError3) {
+	          throw _iteratorError3;
 	        }
 	      }
 	    }
@@ -37128,7 +37268,8 @@
 	    this.bribes++;
 	  },
 	
-	  knockOutOne: function knockOutOne() {
+	  getActiveHooligans: function getActiveHooligans() {
+	    var hooligans = [];
 	    var _iteratorNormalCompletion2 = true;
 	    var _didIteratorError2 = false;
 	    var _iteratorError2 = undefined;
@@ -37137,9 +37278,8 @@
 	      for (var _iterator2 = this.hooligans[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	        var hooligan = _step2.value;
 	
-	        if (!hooligan.eliminated && hooligan != this.leader) {
-	          hooligan.eliminated = true;
-	          return;
+	        if (!hooligan.eliminated) {
+	          hooligans.push(hooligan);
 	        }
 	      }
 	    } catch (err) {
@@ -37153,6 +37293,39 @@
 	      } finally {
 	        if (_didIteratorError2) {
 	          throw _iteratorError2;
+	        }
+	      }
+	    }
+	
+	    return hooligans;
+	  },
+	
+	  knockOutOne: function knockOutOne() {
+	    var knockOutList = _.shuffle(this.hooligans);
+	    var _iteratorNormalCompletion3 = true;
+	    var _didIteratorError3 = false;
+	    var _iteratorError3 = undefined;
+	
+	    try {
+	      for (var _iterator3 = knockOutList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	        var hooligan = _step3.value;
+	
+	        if (!hooligan.eliminated && hooligan != this.leader) {
+	          hooligan.eliminated = true;
+	          return;
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError3 = true;
+	      _iteratorError3 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	          _iterator3.return();
+	        }
+	      } finally {
+	        if (_didIteratorError3) {
+	          throw _iteratorError3;
 	        }
 	      }
 	    }

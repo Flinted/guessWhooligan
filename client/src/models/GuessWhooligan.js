@@ -4,7 +4,7 @@ var _ = require('lodash');
 
 
 var GuessWhooligan = function(hooligans, players){
-  this.turnCounter =  0,
+  this.turnCounter =  1,
   this.players = players,
   this.currentPlayer= players[0],
   this.targetPlayer = players[1],
@@ -23,20 +23,39 @@ GuessWhooligan.prototype ={
   },
 
   changeTurn:  function(){
-      this.turnCounter ++;
       if(this.targetPlayer === this.players[0]){
         this.targetPlayer= this.players[1];
         this.currentPlayer = this.players[0];
+        this.turnCounter ++
       }else{
         this.targetPlayer=this.players[0];
         this.currentPlayer = this.players[1];
       }
-      return(this.turnCounter<5);
+      console.log(this.turnCounter<6);
+      return(this.turnCounter<6);
   },
 
   handleGuess: function(player, guess){
       player.guessCheck(guess);
   },
+
+  turn: function(){
+      return this.turnCounter;
+  },
+
+  decideBattle: function(){
+      var player1 = this.players[0].getActiveHooligans();
+      var player2 = this.players[1].getActiveHooligans();
+      var winner = null;
+      if(player1.length>player2.length){
+          winner = this.players[0];
+      }else{
+          winner = this.players[1];
+      } 
+
+
+      return [player1,player2,winner];
+  },  
 
   returnHooligans: function(playertoReturn){
         if(this.players[0] == playertoReturn){

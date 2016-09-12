@@ -18,7 +18,7 @@ Hooligan.prototype = {
 
   for(var characteristic of this.characteristics){
     if(characteristic.description == guess){
-      if(characteristic.valid != boolean){
+      if(characteristic.valid != boolean && this.eliminated != 'bribed'){
         this.eliminated = true;
         return;
       };
@@ -31,7 +31,8 @@ makeLeader: function(){
 },
 
 eliminate: function(){
-  this.eliminated = true;
+  this.eliminated='bribed'
+  // this.eliminated = true;
 }
 }
 

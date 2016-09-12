@@ -152,6 +152,20 @@ body {
   pointer-events: none;
 }
 
+.game-card-out-bribed{
+  width: 140px;
+  height: 140px;
+  margin: 3px 3px 3px 3px;
+  background-image: url('/images/fist.png') !important;
+  background-repeat: no-repeat;
+  display: inline-flex;
+  justify-content: center;
+  border: 3px solid black;
+  background-size: contain;
+  padding: none;
+  pointer-events: none;
+}
+
 .game-card-out .name{
   display: none;
 }

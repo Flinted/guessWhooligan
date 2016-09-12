@@ -2,7 +2,10 @@ var React = require('react');
 
 var HooliganCard = function(props){
   var className =''
-  if(props.eliminated){
+  if(props.eliminated == 'bribed'){
+    className= "game-card-out-bribed";
+  }
+  else if(props.eliminated){
     className= "game-card-out";
   }else{
     className= "game-card";

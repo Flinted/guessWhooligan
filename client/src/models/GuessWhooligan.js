@@ -63,7 +63,6 @@ GuessWhooligan.prototype ={
   setOutcome: function(player1,player2){
       var resultCode = player1.length - player2.length;
       if(resultCode<0){resultCode = resultCode * -1};
-      console.log(resultCode)
       switch(resultCode){
           case 3: 
             return "it was a walkover";
@@ -75,7 +74,7 @@ GuessWhooligan.prototype ={
             return " it was a tie, and they just got lucky!";
           default:
             return "it was a massacre!";
-      }
+      };
 
   },  
 
@@ -100,7 +99,7 @@ GuessWhooligan.prototype ={
     return returnGuesses;
   }
 
-}
+};
 
 
 module.exports = GuessWhooligan;

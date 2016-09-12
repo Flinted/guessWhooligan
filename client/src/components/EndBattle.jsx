@@ -10,8 +10,8 @@ if(props.leader){
     <button id="restart" onClick={props.restart}>Again?</button>
     <h6>You took out {props.leader.name} before he could get his squad together.</h6>
     </div>
-    )
-}
+    );
+};
 return(<div id={props.endGame}></div>)
 }
 

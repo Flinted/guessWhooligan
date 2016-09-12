@@ -15,18 +15,18 @@ var EndGame = function(props){
         <button id="restart" onClick={props.restart}>Again?</button>
         <h6>You took out {props.leader.name} before he could get his squad together.</h6>
         </div>
-        )
+        );
     }else{
       var p1hooliganNodes = props.p1Battle.map(function(hooligan, index){
         return(
           <HooliganCard index={index} name={hooligan.name} img={hooligan.img}eliminated={hooligan.eliminated} key={index} getThem={props.getThem}/>
-          )
-      })  
+          );
+      });  
       var p2hooliganNodes = props.p2Battle.map(function(hooligan, index){
         return(
           <HooliganCard index={index} name={hooligan.name} img={hooligan.img}eliminated={hooligan.eliminated} key={index} getThem={props.getThem}/>
-          )
-      })  
+          );
+      });  
       
 
       return(
@@ -48,8 +48,8 @@ var EndGame = function(props){
         </div>
 
         </div>
-        )
-    }
+        );
+    };
   }
 
 

@@ -8,7 +8,7 @@ var Player = function(name, classid){
     this.classid=classid,
     this.leader = null,
     this.bribes = 0
-}
+};
 
 Player.prototype={
   setup: function(hooligansToAdd){
@@ -22,10 +22,10 @@ Player.prototype={
   },
 
   guessCheck: function(guess){
-    var binaryResult = this.leader.checkGuess(guess)
+    var binaryResult = this.leader.checkGuess(guess);
       for(var hooligan of this.hooligans){
           hooligan.checkGuess(guess,binaryResult);
-      }
+      };
   },
 
   addBribe: function(){
@@ -37,8 +37,8 @@ Player.prototype={
       for(var hooligan of this.hooligans){
           if(!hooligan.eliminated){
             hooligans.push(hooligan);
-          }
-      }
+          };
+      };
       return hooligans;
   },
 
@@ -56,9 +56,6 @@ Player.prototype={
      this.bribes --;
   }
 
-
-
-
-}
+};
 
 module.exports = Player;

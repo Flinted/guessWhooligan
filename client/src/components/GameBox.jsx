@@ -8,8 +8,8 @@ var GuessWhooligan = require('../models/GuessWhooligan');
 
 var GameBox = React.createClass({
   getInitialState: function() {
-    var game = new GuessWhooligan(this.props.hooligans, this.props.players)
-    game.setupHooligans()
+    var game = new GuessWhooligan(this.props.hooligans, this.props.players);
+    game.setupHooligans();
     return {
       game: game, 
       target: game.targetPlayer, 
@@ -43,7 +43,7 @@ var GameBox = React.createClass({
         button.style.display="none";
         guesser.style.display="none";
         bribe.style.display="none";
-    }
+    };
   },
 
   useBribe: function(){
@@ -65,7 +65,7 @@ var GameBox = React.createClass({
     this.state.game.handleGuess(this.state.target, guess);
     this.refresh();
     if(!this.state.game.changeTurn()){ 
-      this.endBattle()
+      this.endBattle();
       return;
     }
     setTimeout(this.refresh,1000);
@@ -82,7 +82,7 @@ var GameBox = React.createClass({
 
   getThem: function(event){
       console.log('clicked', event.target.value);
-      var target = this.state.target.hooligans[event.target.value]
+      var target = this.state.target.hooligans[event.target.value];
       if(target.leader){
         this.endGame(target);
       }else{
@@ -90,7 +90,7 @@ var GameBox = React.createClass({
         this.state.target.addBribe();
         this.refresh();
         if(!this.state.game.changeTurn()){ 
-          this.endBattle()
+          this.endBattle();
           return;
           }
         setTimeout(this.refresh,250);
@@ -106,7 +106,7 @@ var GameBox = React.createClass({
   },
 
   endGame: function(target){
-    this.setState({endGame: "game-ended", foundLeader: target })
+    this.setState({endGame: "game-ended", foundLeader: target });
   },
 
   restart: function(){

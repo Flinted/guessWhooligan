@@ -6,7 +6,7 @@ var HooliganCard = function(props){
     className= "game-card-out";
   }else{
     className= "game-card";
-  } 
+  }; 
 
   var divStyle = {
     backgroundImage: 'url(' + props.img + ')'
@@ -16,7 +16,7 @@ var HooliganCard = function(props){
     <li value= {props.index} onClick={props.getThem} className={className} style={divStyle}>
     <p className='name'>{props.name}</p>
     </li>
-    )
+    );
 }
 
 module.exports = HooliganCard;

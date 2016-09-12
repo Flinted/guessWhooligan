@@ -19808,7 +19808,7 @@
 	      button.style.display = "none";
 	      guesser.style.display = "none";
 	      bribe.style.display = "none";
-	    }
+	    };
 	  },
 	
 	  useBribe: function useBribe() {
@@ -19938,7 +19938,7 @@
 	  var turn = 5;
 	  if (props.turn == 5) {
 	    var turn = "5...LAST TURN!";
-	  }
+	  };
 	
 	  return React.createElement(
 	    'div',
@@ -19976,7 +19976,7 @@
 	    className = "game-card-out";
 	  } else {
 	    className = "game-card";
-	  }
+	  };
 	
 	  var divStyle = {
 	    backgroundImage: 'url(' + props.img + ')'
@@ -20146,7 +20146,7 @@
 	        p2hooliganNodes
 	      )
 	    );
-	  }
+	  };
 	};
 	
 	module.exports = EndGame;
@@ -20266,7 +20266,6 @@
 	    if (resultCode < 0) {
 	      resultCode = resultCode * -1;
 	    };
-	    console.log(resultCode);
 	    switch (resultCode) {
 	      case 3:
 	        return "it was a walkover";
@@ -20278,7 +20277,7 @@
 	        return " it was a tie, and they just got lucky!";
 	      default:
 	        return "it was a massacre!";
-	    }
+	    };
 	  },
 	
 	  returnHooligans: function returnHooligans(playertoReturn) {
@@ -20356,6 +20355,8 @@
 	        }
 	      }
 	    }
+	
+	    ;
 	  },
 	
 	  addBribe: function addBribe() {
@@ -20374,7 +20375,7 @@
 	
 	        if (!hooligan.eliminated) {
 	          hooligans.push(hooligan);
-	        }
+	        };
 	      }
 	    } catch (err) {
 	      _didIteratorError2 = true;
@@ -20391,6 +20392,7 @@
 	      }
 	    }
 	
+	    ;
 	    return hooligans;
 	  },
 	
@@ -20444,7 +20446,6 @@
 	};
 	
 	Hooligan.prototype = {
-	
 	  checkGuess: function checkGuess(guess, boolean) {
 	    if (this.leader) {
 	      var _iteratorNormalCompletion = true;
@@ -20457,7 +20458,7 @@
 	
 	          if (characteristic.description == guess) {
 	            return characteristic.valid;
-	          }
+	          };
 	        }
 	      } catch (err) {
 	        _didIteratorError = true;
@@ -20473,7 +20474,9 @@
 	          }
 	        }
 	      }
-	    }
+	
+	      ;
+	    };
 	
 	    var _iteratorNormalCompletion2 = true;
 	    var _didIteratorError2 = false;
@@ -20487,8 +20490,8 @@
 	          if (characteristic.valid != boolean) {
 	            this.eliminated = true;
 	            return;
-	          }
-	        }
+	          };
+	        };
 	      }
 	    } catch (err) {
 	      _didIteratorError2 = true;
@@ -20504,6 +20507,8 @@
 	        }
 	      }
 	    }
+	
+	    ;
 	  },
 	
 	  makeLeader: function makeLeader() {
@@ -37396,6 +37401,8 @@
 	        }
 	      }
 	    }
+	
+	    ;
 	  },
 	
 	  addBribe: function addBribe() {
@@ -37414,7 +37421,7 @@
 	
 	        if (!hooligan.eliminated) {
 	          hooligans.push(hooligan);
-	        }
+	        };
 	      }
 	    } catch (err) {
 	      _didIteratorError2 = true;
@@ -37431,6 +37438,7 @@
 	      }
 	    }
 	
+	    ;
 	    return hooligans;
 	  },
 	

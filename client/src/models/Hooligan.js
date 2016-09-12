@@ -7,25 +7,23 @@ var Hooligan =function(params){
 }
 
 Hooligan.prototype = {
-
-
   checkGuess: function(guess,boolean){
     if(this.leader){
       for(var characteristic of this.characteristics){
         if(characteristic.description == guess){
           return characteristic.valid;
-        }
-      }
-    }
+        };
+      };
+    };
 
   for(var characteristic of this.characteristics){
     if(characteristic.description == guess){
       if(characteristic.valid != boolean){
         this.eliminated = true;
         return;
-      }
-    }
-  }
+      };
+    };
+  };
 },
 
 makeLeader: function(){

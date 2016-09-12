@@ -142,11 +142,11 @@ body {
 .game-card-out{
   width: 140px;
   height: 140px;
-  opacity: 0.4;
   margin: 3px 3px 3px 3px;
+  background-image: url('/images/bars.png') !important;
   display: inline-flex;
   justify-content: center;
-  border: 3px solid white;
+  border: 3px solid black;
   background-size: contain;
   padding: none;
   pointer-events: none;

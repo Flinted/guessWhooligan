@@ -11,7 +11,7 @@ var Welcomer = function(props){
 
             <h6>Click anywhere to begin.</h6>
       </div>
-    )
+    );
 }
 
 module.exports = Welcomer;

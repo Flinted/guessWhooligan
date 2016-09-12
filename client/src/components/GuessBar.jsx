@@ -5,8 +5,8 @@ var GuessBar= function(props){
   var characteristicsNodes = props.guesses.map(function(guess, index){
     return(
       <option index={index} key={index}>{guess} </option>
-      )
-  }) 
+      );
+  }) ;
 
   return(
     <div id='guess-bar'>
@@ -17,7 +17,7 @@ var GuessBar= function(props){
         <button onClick={props.onClick} id="guess-button">Inform</button>
         <button onClick={props.useBribe} id="bribe-button">Bribes: {props.bribes}</button>
     </div>
-    )
+    );
 }
 
 module.exports = GuessBar;

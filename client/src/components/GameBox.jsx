@@ -60,7 +60,7 @@ var GameBox = React.createClass({
 
   handleGuess: function(event){
     this.toggleButton();
-    setTimeout(this.toggleButton,1000);
+    setTimeout(this.toggleButton,10);
     var guess = document.getElementById('guesser').value;
     this.state.game.handleGuess(this.state.target, guess);
     this.refresh();
@@ -68,7 +68,7 @@ var GameBox = React.createClass({
       this.endBattle();
       return;
     }
-    setTimeout(this.refresh,1000);
+    setTimeout(this.refresh,10);
   },
 
   refresh: function(){

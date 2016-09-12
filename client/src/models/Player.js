@@ -45,7 +45,7 @@ Player.prototype={
   knockOutOne: function(){
     var knockOutList = _.shuffle(this.hooligans);
       for(var hooligan of knockOutList){
-          if(!hooligan.eliminated && hooligan != this.leader) && hooligan.eliminated!='bribed'){
+          if(!hooligan.eliminated && hooligan != this.leader && hooligan.eliminated!='bribed'){
             hooligan.eliminate();
             return;
           }

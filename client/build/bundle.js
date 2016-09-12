@@ -49,7 +49,7 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
 	var GameBox = __webpack_require__(159);
-	var Player = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./models/Player\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var Player = __webpack_require__(166);
 	var Hooligan = __webpack_require__(167);
 	var Seeds = __webpack_require__(170);
 	
@@ -19824,7 +19824,7 @@
 	
 	  handleGuess: function handleGuess(event) {
 	    this.toggleButton();
-	    setTimeout(this.toggleButton, 1000);
+	    setTimeout(this.toggleButton, 10);
 	    var guess = document.getElementById('guesser').value;
 	    this.state.game.handleGuess(this.state.target, guess);
 	    this.refresh();
@@ -19832,7 +19832,7 @@
 	      this.endBattle();
 	      return;
 	    }
-	    setTimeout(this.refresh, 1000);
+	    setTimeout(this.refresh, 10);
 	  },
 	
 	  refresh: function refresh() {
@@ -20207,7 +20207,7 @@
 	'use strict';
 	
 	var Hooligan = __webpack_require__(167);
-	var Player = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./player\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var Player = __webpack_require__(171);
 	var _ = __webpack_require__(168);
 	
 	var GuessWhooligan = function GuessWhooligan(hooligans, players) {
@@ -20308,7 +20308,136 @@
 	module.exports = GuessWhooligan;
 
 /***/ },
-/* 166 */,
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Hooligan = __webpack_require__(167);
+	var _ = __webpack_require__(168);
+	
+	var Player = function Player(name, classid) {
+	  this.name = name, this.hooligans = [], this.eliminated = [], this.classid = classid, this.leader = null, this.bribes = 0;
+	};
+	
+	Player.prototype = {
+	  setup: function setup(hooligansToAdd) {
+	    var hooligans = _.shuffle(hooligansToAdd);
+	    this.hooligans = hooligans.map(function (params) {
+	      return new Hooligan(params);
+	    });
+	    var index = Math.floor(Math.random() * this.hooligans.length);
+	    this.leader = this.hooligans[index];
+	    this.leader.makeLeader();
+	  },
+	
+	  guessCheck: function guessCheck(guess) {
+	    var binaryResult = this.leader.checkGuess(guess);
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+	
+	    try {
+	      for (var _iterator = this.hooligans[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var hooligan = _step.value;
+	
+	        hooligan.checkGuess(guess, binaryResult);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+	
+	    ;
+	  },
+	
+	  addBribe: function addBribe() {
+	    this.bribes++;
+	  },
+	
+	  getActiveHooligans: function getActiveHooligans() {
+	    var hooligans = [];
+	    var _iteratorNormalCompletion2 = true;
+	    var _didIteratorError2 = false;
+	    var _iteratorError2 = undefined;
+	
+	    try {
+	      for (var _iterator2 = this.hooligans[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	        var hooligan = _step2.value;
+	
+	        if (!hooligan.eliminated) {
+	          hooligans.push(hooligan);
+	        };
+	      }
+	    } catch (err) {
+	      _didIteratorError2 = true;
+	      _iteratorError2 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	          _iterator2.return();
+	        }
+	      } finally {
+	        if (_didIteratorError2) {
+	          throw _iteratorError2;
+	        }
+	      }
+	    }
+	
+	    ;
+	    return hooligans;
+	  },
+	
+	  knockOutOne: function knockOutOne() {
+	    var knockOutList = _.shuffle(this.hooligans);
+	    var _iteratorNormalCompletion3 = true;
+	    var _didIteratorError3 = false;
+	    var _iteratorError3 = undefined;
+	
+	    try {
+	      for (var _iterator3 = knockOutList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	        var hooligan = _step3.value;
+	
+	        if (!hooligan.eliminated && hooligan != this.leader && hooligan.eliminated != 'bribed') {
+	          hooligan.eliminate();
+	          return;
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError3 = true;
+	      _iteratorError3 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	          _iterator3.return();
+	        }
+	      } finally {
+	        if (_didIteratorError3) {
+	          throw _iteratorError3;
+	        }
+	      }
+	    }
+	  },
+	
+	  useBribe: function useBribe() {
+	    this.bribes--;
+	  }
+	
+	};
+	
+	module.exports = Player;
+
+/***/ },
 /* 167 */
 /***/ function(module, exports) {
 
@@ -37224,6 +37353,136 @@
 	    characteristics: [{ description: 'had facial hair', valid: true }, { description: 'had tattoos', valid: false }, { description: 'had a skinhead', valid: false }, { description: 'had a hat', valid: false }, { description: 'had crazy eyes', valid: true }, { description: 'had facial tattoos', valid: false }, { description: 'had long hair', valid: false }, { description: 'had short hair', valid: true }, { description: 'were quite young', valid: true }, { description: 'were quite old', valid: false }, { description: 'seemed happy', valid: false }, { description: 'seemed angry', valid: false }] }] };
 	
 	module.exports = seeds;
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Hooligan = __webpack_require__(167);
+	var _ = __webpack_require__(168);
+	
+	var Player = function Player(name, classid) {
+	  this.name = name, this.hooligans = [], this.eliminated = [], this.classid = classid, this.leader = null, this.bribes = 0;
+	};
+	
+	Player.prototype = {
+	  setup: function setup(hooligansToAdd) {
+	    var hooligans = _.shuffle(hooligansToAdd);
+	    this.hooligans = hooligans.map(function (params) {
+	      return new Hooligan(params);
+	    });
+	    var index = Math.floor(Math.random() * this.hooligans.length);
+	    this.leader = this.hooligans[index];
+	    this.leader.makeLeader();
+	  },
+	
+	  guessCheck: function guessCheck(guess) {
+	    var binaryResult = this.leader.checkGuess(guess);
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+	
+	    try {
+	      for (var _iterator = this.hooligans[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var hooligan = _step.value;
+	
+	        hooligan.checkGuess(guess, binaryResult);
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+	
+	    ;
+	  },
+	
+	  addBribe: function addBribe() {
+	    this.bribes++;
+	  },
+	
+	  getActiveHooligans: function getActiveHooligans() {
+	    var hooligans = [];
+	    var _iteratorNormalCompletion2 = true;
+	    var _didIteratorError2 = false;
+	    var _iteratorError2 = undefined;
+	
+	    try {
+	      for (var _iterator2 = this.hooligans[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	        var hooligan = _step2.value;
+	
+	        if (!hooligan.eliminated) {
+	          hooligans.push(hooligan);
+	        };
+	      }
+	    } catch (err) {
+	      _didIteratorError2 = true;
+	      _iteratorError2 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	          _iterator2.return();
+	        }
+	      } finally {
+	        if (_didIteratorError2) {
+	          throw _iteratorError2;
+	        }
+	      }
+	    }
+	
+	    ;
+	    return hooligans;
+	  },
+	
+	  knockOutOne: function knockOutOne() {
+	    var knockOutList = _.shuffle(this.hooligans);
+	    var _iteratorNormalCompletion3 = true;
+	    var _didIteratorError3 = false;
+	    var _iteratorError3 = undefined;
+	
+	    try {
+	      for (var _iterator3 = knockOutList[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+	        var hooligan = _step3.value;
+	
+	        if (!hooligan.eliminated && hooligan != this.leader && hooligan.eliminated != 'bribed') {
+	          hooligan.eliminate();
+	          return;
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError3 = true;
+	      _iteratorError3 = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion3 && _iterator3.return) {
+	          _iterator3.return();
+	        }
+	      } finally {
+	        if (_didIteratorError3) {
+	          throw _iteratorError3;
+	        }
+	      }
+	    }
+	  },
+	
+	  useBribe: function useBribe() {
+	    this.bribes--;
+	  }
+	
+	};
+	
+	module.exports = Player;
 
 /***/ }
 /******/ ]);
